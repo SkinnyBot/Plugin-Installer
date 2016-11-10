@@ -30,5 +30,5 @@
             "Skinny\\Test\\Composer\\": "tests"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }
