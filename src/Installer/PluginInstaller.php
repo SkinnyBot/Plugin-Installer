@@ -12,61 +12,6 @@ use RuntimeException;
 
 class PluginInstaller extends LibraryInstaller
 {
-    /**
-     * A flag to check usage - once
-     *
-     * @var bool
-     */
-    protected static $checkUsage = true;
-
-    /**
-     * Check usage upon construction
-     *
-     * @param IOInterface $io composer object
-     * @param Composer    $composer composer object
-     * @param string      $type what are we loading
-     * @param Filesystem  $filesystem composer object
-     */
-    public function __construct(IOInterface $io, Composer $composer, $type = 'library', Filesystem $filesystem = null)
-    {
-        parent::__construct($io, $composer, $type, $filesystem);
-        $this->checkUsage($composer);
-    }
-
-    /**
-     * Check that the root composer.json file use the post-autoload-dump hook
-     *
-     * If not, warn the user they need to update their application's composer file.
-     * Do nothing if the main project is not a project (if it's a plugin in development).
-     *
-     * @param Composer $composer object
-     * @return void
-     */
-    public function checkUsage(Composer $composer)
-    {
-        if (static::$checkUsage === false) {
-            return;
-        }
-        static::$checkUsage = false;
-
-        $package = $composer->getPackage();
-
-        if (!$package || $package->getType() !== 'project') {
-            return;
-        }
-
-        $scripts = $composer->getPackage()->getScripts();
-        $postAutoloadDump = 'Skinny\Composer\Installer\PluginInstaller::postAutoloadDump';
-        if (!isset($scripts['post-autoload-dump']) ||
-            !in_array($postAutoloadDump, $scripts['post-autoload-dump'])
-        ) {
-            $this->warnUser(
-                'Action required!',
-                'The Skinny plugin installer has been changed, please update your' .
-                ' application composer.json file to add the post-autoload-dump hook.'
-            );
-        }
-    }
 
     /**
      * Warn the developer of action they need to take
