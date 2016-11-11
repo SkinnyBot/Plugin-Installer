@@ -30,5 +30,8 @@
             "Skinny\\Test\\Composer\\": "tests"
         }
     },
+    "extra": {
+        "class": "Skinny\\Composer\\Installer\\PluginInstaller"
+    },
     "minimum-stability": "stable"
 }
