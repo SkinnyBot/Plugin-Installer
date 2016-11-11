@@ -3,7 +3,7 @@
     "description": "The plugin installer for Skinny.",
     "homepage": "https://github.com/Plugin-Installer/Basic",
     "keywords": ["discord", "bot", "php", "discordphp", "botphp", "skinny", "plugin", "installer"],
-    "type": "skinny-plugin",
+    "type": "composer-installer",
     "license": "MIT",
     "support": {
         "source":"https://github.com/SkinnyBot/Plugin-Installer",
