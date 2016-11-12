@@ -14,44 +14,13 @@ class PluginInstaller extends LibraryInstaller
 {
 
     /**
-     * Warn the developer of action they need to take
-     *
-     * @param string $title Warning title
-     * @param string $text warning text
-     *
-     * @return void
-     */
-    public function warnUser($title, $text)
-    {
-        $wrap = function ($text, $width = 75) {
-            return '<error>     ' . str_pad($text, $width) . '</error>';
-        };
-
-        $messages = [
-            '',
-            '',
-            $wrap(''),
-            $wrap($title),
-            $wrap(''),
-        ];
-
-        $lines = explode("\n", wordwrap($text, 68));
-        foreach ($lines as $line) {
-            $messages[] = $wrap($line);
-        }
-
-        $messages = array_merge($messages, [$wrap(''), '', '']);
-
-        $this->io->write($messages);
-    }
-
-    /**
-     * Called whenever composer (re)generates the autoloader
+     * Called whenever composer (re)generates the autoloader.
      *
      * Recreates Skinny plugin path map, based on composer information
      * and available app-plugins.
      *
-     * @param Event $event the composer event object
+     * @param Event $event the composer event object.
+     *
      * @return void
      */
     public static function postAutoloadDump(Event $event)
@@ -66,20 +35,21 @@ class PluginInstaller extends LibraryInstaller
 
         $plugins = static::determinePlugins($packages, $pluginsDir, $vendorDir);
 
-        $configFile = static::_configFile($vendorDir);
+        $configFile = static::configFile($vendorDir);
         static::writeConfigFile($configFile, $plugins);
     }
 
     /**
-     * Find all plugins available
+     * Find all plugins available.
      *
      * Add all composer packages of type skinny-plugin, and all plugins located
-     * in the plugins directory to a plugin-name indexed array of paths
+     * in the plugins directory to a plugin-name indexed array of paths.
      *
-     * @param array $packages an array of \Composer\Package\PackageInterface objects
-     * @param string $pluginsDir the path to the plugins dir
-     * @param string $vendorDir the path to the vendor dir
-     * @return array plugin-name indexed paths to plugins
+     * @param array $packages An array of \Composer\Package\PackageInterface objects.
+     * @param string $pluginsDir The path to the plugins dir.
+     * @param string $vendorDir The path to the vendor dir.
+     *
+     * @return array plugin-name Indexed paths to plugins.
      */
     public static function determinePlugins($packages, $pluginsDir = 'plugins', $vendorDir = 'vendor')
     {
@@ -112,11 +82,12 @@ class PluginInstaller extends LibraryInstaller
     }
 
     /**
-     * Rewrite the config file with a complete list of plugins
+     * Rewrite the config file with a complete list of plugins.
      *
-     * @param string $configFile the path to the config file
-     * @param array $plugins of plugins
-     * @param string|null $root The root directory. Defaults to a value generated from $configFile
+     * @param string $configFile The path to the config file.
+     * @param array $plugins Of plugins.
+     * @param string|null $root The root directory. Defaults to a value generated from $configFile.
+     *
      * @return void
      */
     public static function writeConfigFile($configFile, $plugins, $root = null)
@@ -175,12 +146,13 @@ PHP;
     }
 
     /**
-     * Path to the plugin config file
+     * Path to the plugin config file.
      *
-     * @param string $vendorDir path to composer-vendor dir
-     * @return string absolute file path
+     * @param string $vendorDir Path to composer-vendor dir.
+     *
+     * @return string absolute File path.
      */
-    protected static function _configFile($vendorDir)
+    protected static function configFile($vendorDir)
     {
         return $vendorDir . DIRECTORY_SEPARATOR . 'skinny-plugins.php';
     }
@@ -188,8 +160,10 @@ PHP;
     /**
      * Get the primary namespace for a plugin package.
      *
-     * @param \Composer\Package\PackageInterface $package composer object
+     * @param \Composer\Package\PackageInterface $package composer object.
+     *
      * @return string The package's primary namespace.
+     *
      * @throws \RuntimeException When the package's primary namespace cannot be determined.
      */
     public static function primaryNamespace($package)
@@ -254,6 +228,7 @@ PHP;
      *
      * @param \Composer\Repository\InstalledRepositoryInterface $repo Repository in which to check.
      * @param \Composer\Package\PackageInterface $package Package instance.
+     *
      * @deprecated superceeded by the post-autoload-dump hook
      */
     public function install(InstalledRepositoryInterface $repo, PackageInterface $package)
@@ -273,9 +248,10 @@ PHP;
      * @param \Composer\Repository\InstalledRepositoryInterface $repo Repository in which to check.
      * @param \Composer\Package\PackageInterface $initial Already installed package version.
      * @param \Composer\Package\PackageInterface $target Updated version.
+     *
      * @deprecated superceeded by the post-autoload-dump hook
      *
-     * @throws \InvalidArgumentException if $initial package is not installed
+     * @throws \InvalidArgumentException If $initial package is not installed.
      */
     public function update(InstalledRepositoryInterface $repo, PackageInterface $initial, PackageInterface $target)
     {
@@ -294,6 +270,7 @@ PHP;
      *
      * @param \Composer\Repository\InstalledRepositoryInterface $repo Repository in which to check.
      * @param \Composer\Package\PackageInterface $package Package instance.
+     *
      * @deprecated superceeded by the post-autoload-dump hook
      */
     public function uninstall(InstalledRepositoryInterface $repo, PackageInterface $package)
@@ -313,8 +290,8 @@ PHP;
     public function updateConfig($name, $path)
     {
         $name = str_replace('\\', '/', $name);
-        $configFile = static::_configFile($this->vendorDir);
-        $this->_ensureConfigFile($configFile);
+        $configFile = static::configFile($this->vendorDir);
+        $this->ensureConfigFile($configFile);
 
         $return = include $configFile;
         if (is_array($return) && empty($config)) {
@@ -342,25 +319,17 @@ PHP;
     /**
      * Ensure that the vendor/skinny-plugins.php file exists.
      *
-     * If config/plugins.php is found - copy it to the vendor folder
+     * If config/plugins.php is found - copy it to the vendor folder.
      *
      * @param string $path the config file path.
+     *
      * @return void
      */
-    protected function _ensureConfigFile($path)
+    protected function ensureConfigFile($path)
     {
         if (file_exists($path)) {
             if ($this->io->isVerbose()) {
                 $this->io->write('vendor/skinny-plugins.php exists.');
-            }
-            return;
-        }
-
-        $oldPath = dirname(dirname($path)) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'plugins.php';
-        if (file_exists($oldPath)) {
-            copy($oldPath, $path);
-            if ($this->io->isVerbose()) {
-                $this->io->write('config/plugins.php found and copied to vendor/skinny-plugins.php.');
             }
             return;
         }
