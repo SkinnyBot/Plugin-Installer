@@ -7,7 +7,7 @@
 A composer installer for installing Skinny plugins.
 
 ## Usage
-Your plugins themselves do not need to require `skinny/plugin-installer`. They only need to specify the type in their composer config :
+Your plugins themselves do not need to require `skinnybot/plugin-installer`. They only need to specify the type in their composer config :
 ```json
 "type": "skinny-plugin"
 ```
